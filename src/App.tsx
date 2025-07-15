@@ -1,12 +1,10 @@
 import "./App.css";
-import Hero from "./components/Hero";
-import SurahContainer from "./components/Surah/SurahContainer";
+import HomePage from "./pages/HomePage";
 
 function App() {
   return (
     <>
-      <Hero />
-      <SurahContainer />
+      <HomePage />
     </>
   );
 }

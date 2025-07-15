@@ -9,7 +9,7 @@ function SurahContainer() {
 
   const fetchSurahs = async () => {
     try {
-      const response = await fetch("https://equran.id/api/v2/sura");
+      const response = await fetch("https://equran.id/api/v2/surat");
       if (!response.ok) {
         throw new Error("Failed to fetch surahs");
       }
