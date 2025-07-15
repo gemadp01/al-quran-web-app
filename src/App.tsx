@@ -1,16 +1,12 @@
-import Photo from "./assets/Photo.png";
 import "./App.css";
-import Profile from "./components/Profile";
+import Hero from "./components/Hero";
+import SurahContainer from "./components/Surah/SurahContainer";
 
 function App() {
   return (
     <>
-      <Profile
-        greeting="Hello"
-        name="John Doe"
-        // avatar="https://via.placeholder.com/150"
-        avatar={Photo}
-      />
+      <Hero />
+      <SurahContainer />
     </>
   );
 }

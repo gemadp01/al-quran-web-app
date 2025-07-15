@@ -13,9 +13,8 @@
   --color-accent-light-purple: rgba(108, 142, 255, 0.4);
 }
 
-/* :root {
+:root {
   font-family: "Sora", sans-serif;
-   
 }
 
 .bg-hero {
@@ -34,7 +33,7 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  /* place-items: center; */
   min-width: 320px;
   min-height: 100vh;
   background-color: var(--color-background);
@@ -71,4 +70,4 @@ button:focus-visible {
   a:hover {
     color: #747bff;
   }
-} */
+}

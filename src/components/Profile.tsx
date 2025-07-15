@@ -9,9 +9,9 @@ function Profile({ greeting, name, avatar }: ProfileProps) {
     <div className="flex justify-between items-center">
       <div>
         <p className="text-left">{greeting}</p>
-        <p className="text-left text-2xl font-bold">{name}</p>
+        <p className="text-left text-2xl font-bold hidden">{name}</p>
       </div>
-      <img src={avatar} alt="Profile User" className="w-10 h-10" />
+      <img src={avatar} alt="Profile User" className="w-10 h-10 hidden" />
     </div>
   );
 }
