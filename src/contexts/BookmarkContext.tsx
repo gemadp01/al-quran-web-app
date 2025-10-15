@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useMemo } from "react";
-import type { Bookmark, BookmarkContextType } from "../types/bookmark";
+import type { Bookmark, BookmarkContextType, LastRead } from "../types/bookmark";
 
 export const BookmarkContext = createContext<BookmarkContextType>({
   bookmarks: [],
@@ -7,6 +7,9 @@ export const BookmarkContext = createContext<BookmarkContextType>({
   removeBookmark: () => {},
   isBookmarked: () => false,
   getBookmarkId: () => null,
+  lastRead: null,
+  setLastRead: () => {},
+  clearLastRead: () => {},
 });
 
 interface BookmarkProviderProps {
@@ -15,6 +18,7 @@ interface BookmarkProviderProps {
 
 export function BookmarkProvider({ children }: BookmarkProviderProps) {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [lastRead, setLastReadState] = useState<LastRead | null>(null);
 
   // Load bookmarks from localStorage on mount
   useEffect(() => {
@@ -32,10 +36,33 @@ export function BookmarkProvider({ children }: BookmarkProviderProps) {
     }
   }, []);
 
+  // Load last read from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem("quran-last-read");
+    if (stored) {
+      try {
+        const parsedLastRead = {
+          ...JSON.parse(stored),
+          readAt: new Date(JSON.parse(stored).readAt),
+        };
+        setLastReadState(parsedLastRead);
+      } catch (error) {
+        console.error("Error loading last read:", error);
+      }
+    }
+  }, []);
+
   // Save bookmarks to localStorage whenever bookmarks change
   useEffect(() => {
     localStorage.setItem("quran-bookmarks", JSON.stringify(bookmarks));
   }, [bookmarks]);
+
+  // Save last read to localStorage whenever lastRead changes
+  useEffect(() => {
+    if (lastRead) {
+      localStorage.setItem("quran-last-read", JSON.stringify(lastRead));
+    }
+  }, [lastRead]);
 
   const addBookmark = (bookmarkData: Omit<Bookmark, 'id' | 'createdAt'>) => {
     const newBookmark: Bookmark = {
@@ -64,13 +91,29 @@ export function BookmarkProvider({ children }: BookmarkProviderProps) {
     return bookmark ? bookmark.id : null;
   };
 
+  const setLastRead = (lastReadData: Omit<LastRead, 'readAt'>) => {
+    const newLastRead: LastRead = {
+      ...lastReadData,
+      readAt: new Date(),
+    };
+    setLastReadState(newLastRead);
+  };
+
+  const clearLastRead = () => {
+    setLastReadState(null);
+    localStorage.removeItem("quran-last-read");
+  };
+
   const contextValue = useMemo(() => ({
     bookmarks,
     addBookmark,
     removeBookmark,
     isBookmarked,
     getBookmarkId,
-  }), [bookmarks]);
+    lastRead,
+    setLastRead,
+    clearLastRead,
+  }), [bookmarks, lastRead]);
 
   return (
     <BookmarkContext.Provider value={contextValue}>

@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import DetailSurah from "./DetailSurah";
 import type { Surah } from "../../types/surah";
 import Navigation from "../Navigation";
+import { BookmarkContext } from "../../contexts/BookmarkContext";
 
 function DetailSurahContainer() {
   const { surahId } = useParams<{ surahId: string }>();
@@ -15,6 +16,7 @@ function DetailSurahContainer() {
   const [audioPlaying, setAudioPlaying] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { setLastRead } = useContext(BookmarkContext);
 
   console.log(audioRef.current);
   // console.log(surah?.audioFull[currentReciter]); // audio url berdasarkan number dari currentReciter
@@ -101,6 +103,61 @@ function DetailSurahContainer() {
       }, 500); // Delay to ensure content is rendered
     }
   }, [surah, searchParams]);
+
+  // Track last read based on scroll position
+  useEffect(() => {
+    if (!surah) return;
+
+    const handleScroll = () => {
+      const ayatElements = document.querySelectorAll('[id^="ayat-"]');
+      let visibleAyat = null;
+      let maxVisibleArea = 0;
+
+      ayatElements.forEach((element) => {
+        const rect = element.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        
+        // Calculate visible area of the element
+        const visibleTop = Math.max(0, rect.top);
+        const visibleBottom = Math.min(viewportHeight, rect.bottom);
+        const visibleArea = Math.max(0, visibleBottom - visibleTop);
+        
+        // If this element is more visible than the previous one
+        if (visibleArea > maxVisibleArea && visibleArea > 100) {
+          maxVisibleArea = visibleArea;
+          visibleAyat = element;
+        }
+      });
+
+      if (visibleAyat) {
+        const ayatNumber = parseInt((visibleAyat as HTMLElement).id.replace('ayat-', ''));
+        const ayat = surah.ayat.find(a => a.nomorAyat === ayatNumber);
+        
+        if (ayat) {
+          setLastRead({
+            surahId: surah.nomor,
+            surahName: surah.nama,
+            surahNameLatin: surah.namaLatin,
+            ayatNumber: ayat.nomorAyat,
+            ayatText: ayat.teksIndonesia,
+          });
+        }
+      }
+    };
+
+    // Throttle scroll events
+    let scrollTimeout: number;
+    const throttledScroll = () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(handleScroll, 100);
+    };
+
+    window.addEventListener('scroll', throttledScroll);
+    return () => {
+      window.removeEventListener('scroll', throttledScroll);
+      clearTimeout(scrollTimeout);
+    };
+  }, [surah, setLastRead]);
 
   useEffect(() => {
     // Cleanup audio when component unmounts
