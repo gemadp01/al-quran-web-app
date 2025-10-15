@@ -34,7 +34,10 @@ ${ayat.teksIndonesia}
     }
   };
   return (
-    <div className="bg-surface border border-border p-5 rounded-xl text-text text-left flex flex-col gap-4 relative hover:shadow-lg transition-all duration-200">
+    <div 
+      id={`ayat-${ayat.nomorAyat}`}
+      className="bg-surface border border-border p-5 rounded-xl text-text text-left flex flex-col gap-4 relative hover:shadow-lg transition-all duration-200"
+    >
       <div className="flex justify-between gap-4">
         <Number nomor={ayat.nomorAyat} />
         <p className="font-bold text-2xl text-right w-full text-text">{ayat.teksArab}</p>

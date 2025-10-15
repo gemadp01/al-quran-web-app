@@ -67,10 +67,10 @@ function BookmarkPage() {
                     </div>
                     <div className="flex gap-2">
                       <Link
-                        to={`/surah/${bookmark.surahId}`}
+                        to={`/surah/${bookmark.surahId}?ayat=${bookmark.ayatNumber}`}
                         className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors text-sm"
                       >
-                        Baca Surah
+                        Baca Ayat
                       </Link>
                       <button
                         onClick={() => removeBookmark(bookmark.id)}

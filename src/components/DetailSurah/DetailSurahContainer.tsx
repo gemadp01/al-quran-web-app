@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import DetailSurah from "./DetailSurah";
 import type { Surah } from "../../types/surah";
 import Navigation from "../Navigation";
 
 function DetailSurahContainer() {
   const { surahId } = useParams<{ surahId: string }>();
+  const [searchParams] = useSearchParams();
   const [surah, setSurah] = useState<Surah | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -79,6 +80,27 @@ function DetailSurahContainer() {
 
     fetchSurah();
   }, [surahId]);
+
+  // Scroll to specific ayat when component loads
+  useEffect(() => {
+    if (surah && searchParams.get('ayat')) {
+      const ayatNumber = parseInt(searchParams.get('ayat') || '1');
+      setTimeout(() => {
+        const element = document.getElementById(`ayat-${ayatNumber}`);
+        if (element) {
+          element.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+          // Add highlight effect
+          element.classList.add('highlight-ayat');
+          setTimeout(() => {
+            element.classList.remove('highlight-ayat');
+          }, 3000);
+        }
+      }, 500); // Delay to ensure content is rendered
+    }
+  }, [surah, searchParams]);
 
   useEffect(() => {
     // Cleanup audio when component unmounts
