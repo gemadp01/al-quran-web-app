@@ -5,7 +5,7 @@ function DetailSurahPage() {
   return (
     <>
       <div className="p-5 text-left">
-        <Link to="/" className="text-light">
+        <Link to="/" className="text-text">
           ← Kembali
         </Link>
       </div>

@@ -6,8 +6,11 @@ type SurahListProps = {
 };
 
 function SurahList({ surahs }: SurahListProps) {
+  if (surahs.length === 0) {
+    return <p>No surahs found</p>;
+  }
   return (
-    <div className="flex flex-col gap-3 p-5">
+    <div className="flex flex-col gap-4">
       {surahs.map((surah) => (
         <SurahCard key={surah.nomor} surah={surah} />
       ))}

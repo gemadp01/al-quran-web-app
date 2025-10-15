@@ -32,7 +32,12 @@ function DetailSurah({
         audioPlaying={audioPlaying}
       />
 
-      <AyatList ayat={surah.ayat} />
+      <AyatList 
+        ayat={surah.ayat} 
+        surahNamaLatin={surah.namaLatin}
+        surahId={surah.nomor}
+        surahName={surah.nama}
+      />
     </div>
   );
 }

@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import type { Surah } from "../../types/surah";
 import DetailSurah from "./DetailSurah";
+import type { Surah } from "../../types/surah";
+import Navigation from "../Navigation";
 
 function DetailSurahContainer() {
   const { surahId } = useParams<{ surahId: string }>();
@@ -13,6 +14,49 @@ function DetailSurahContainer() {
   const [audioPlaying, setAudioPlaying] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  console.log(audioRef.current);
+  // console.log(surah?.audioFull[currentReciter]); // audio url berdasarkan number dari currentReciter
+
+  //! handlePlayFullSurah
+  const handlePlayFullSurah = () => {
+    if (!surah) return;
+
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+
+    audioRef.current = new Audio(surah.audioFull[currentReciter]);
+    audioRef.current.onended = () => {
+      setAudioPlaying(false);
+    };
+
+    audioRef.current.play();
+    setAudioPlaying(true);
+  };
+
+  //! changeReciter
+  const changeReciter = (reciterId: string) => {
+    setCurrentReciter(reciterId);
+    // If audio is playing, restart with new reciter
+    if (audioPlaying) {
+      handlePauseAudio();
+
+      // Timeout to ensure audio is properly stopped before starting new one
+      setTimeout(() => {
+        handlePlayFullSurah();
+      }, 100);
+    }
+  };
+
+  //! handlePauseAudio
+  const handlePauseAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+
+    setAudioPlaying(false);
+  };
 
   useEffect(() => {
     const fetchSurah = async () => {
@@ -46,43 +90,6 @@ function DetailSurahContainer() {
     };
   }, []);
 
-  const changeReciter = (reciterId: string) => {
-    setCurrentReciter(reciterId);
-    // If audio is playing, restart with new reciter
-    if (audioPlaying) {
-      handlePauseAudio();
-
-      // Timeout to ensure audio is properly stopped before starting new one
-      setTimeout(() => {
-        handlePlayFullSurah();
-      }, 100);
-    }
-  };
-
-  const handlePlayFullSurah = () => {
-    if (!surah) return;
-
-    if (audioRef.current) {
-      audioRef.current.pause();
-    }
-
-    audioRef.current = new Audio(surah.audioFull[currentReciter]);
-    audioRef.current.onended = () => {
-      setAudioPlaying(false);
-    };
-
-    audioRef.current.play();
-    setAudioPlaying(true);
-  };
-
-  const handlePauseAudio = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-    }
-
-    setAudioPlaying(false);
-  };
-
   if (loading) {
     return <div className="p-5 text-center">Memuat...</div>;
   }
@@ -96,14 +103,17 @@ function DetailSurahContainer() {
   }
 
   return (
-    <DetailSurah
-      surah={surah}
-      currentReciter={currentReciter}
-      changeReciter={changeReciter}
-      onPlay={handlePlayFullSurah}
-      onPause={handlePauseAudio}
-      audioPlaying={audioPlaying}
-    />
+    <div className="min-h-screen bg-background pb-20">
+      <DetailSurah
+        surah={surah}
+        currentReciter={currentReciter}
+        changeReciter={changeReciter}
+        onPlay={handlePlayFullSurah}
+        onPause={handlePauseAudio}
+        audioPlaying={audioPlaying}
+      />
+      <Navigation />
+    </div>
   );
 }
 

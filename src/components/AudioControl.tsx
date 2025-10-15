@@ -29,7 +29,7 @@ function AudioControl({
       <select
         value={currentReciter}
         onChange={(e) => changeReciter(e.target.value)}
-        className="bg-dark text-light p-3 w-full rounded-lg"
+        className="bg-dark text-text p-3 w-full rounded-lg"
       >
         {reciters.map((reciter) => (
           <option key={reciter.id} value={reciter.id}>
